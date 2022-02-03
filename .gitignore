@@ -1,1 +1,4 @@
-/untab.exe
+build
+tests/*
+!tests/config.nims
+!tests/test1.nim

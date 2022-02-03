@@ -9,7 +9,7 @@ import fusion/matching
 
 let eprint = proc (s: string) = stderr.writeLine(s)
 
-proc openFileCase(path: string): Result[File, string] =
+proc openFileCase*(path: string): Result[File, string] =
     let filename = splitPath(path).tail
     if fileExists(path):
         ok open(path, FileMode.fmReadWriteExisting)
@@ -43,29 +43,41 @@ proc main(path: string, output: Option[string], spaces: Natural) =
             let filename = case output:
                 of Some(@str): str
                 else: tail
-            debugEcho "Writing to: " & joinPath(head, filename)
-            writeFile(joinPath(head, filename), newContents)
+            let outputPath = joinPath(head, filename);
+            writeFile(outputPath, "")
+            echo "Writing to: " & outputPath
+            writeFile(outputPath, newContents)
 
         echo "replaced " & $replaced & " characters."
 
 
 # parse arguments
 # defaults
-let usage = fmt"""usage: {splitPath(getAppFilename()).tail} <file> [spaces per tab] [output file]"""
+when isMainModule:
+    let usage = fmt"""usage: {splitPath(getAppFilename()).tail} <file> [spaces per tab] [output file]"""
 
-let args = commandLineParams()
-var infile = 
-    try: args[0]
-    except:
-        echo usage
-        quit(0)
-var spaces: Natural =
-    try: args[1].parseInt()
-    except: 4
-var outfile =
-    try: some(args[2])
-    except: none(string)
+    let args = commandLineParams()
+    var infile =
+        try: args[0]
+        except:
+            echo usage
+            quit(0)
+    var spaces: Natural =
+        try: args[1].parseInt()
+        except: 4
+    var outfile =
+        try: some(args[2])
+        except: none(string)
 
-case paramCount():
-of 1..3: main(infile, outfile, spaces)
-else: eprint("Too many arguments"); echo usage
+    case paramCount():
+    of 1..3: main(infile, outfile, spaces)
+    else: eprint("Too many arguments"); echo usage
+else:
+    const OUTFILE = none(string)
+    const SPACES: Natural = 4
+    proc test1param*(infile: string) =
+        main(infile, OUTFILE, SPACES)
+    proc test2param*(infile: string, spaces: Natural) =
+        main(infile, OUTFILE, spaces)
+    proc test3param*(infile: string, spaces: Natural, outfile: string) =
+        main(infile, some(outfile), spaces)
