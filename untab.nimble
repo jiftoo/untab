@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.0.0"
+version       = "0.1.0"
 author        = "Dan Kov"
 description   = "Replace tabs with spaces"
 license       = "MIT"

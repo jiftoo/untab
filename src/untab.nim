@@ -26,14 +26,14 @@ proc main(path: string, output: Option[string], spaces: Natural) =
     else:
         let file = result[]
         let contents = file.readAll
-        var newContents = newString contents.len
+        var newContents = ""
 
         var replaced = 0;
         var i = 0
         for char in contents:
             if char == '\t':
                 inc replaced
-                newContents &= ' '.repeat 4
+                newContents  &= ' '.repeat spaces
             else:
                 newContents &= char
             inc i
@@ -44,8 +44,6 @@ proc main(path: string, output: Option[string], spaces: Natural) =
                 of Some(@str): str
                 else: tail
             let outputPath = joinPath(head, filename);
-            writeFile(outputPath, "")
-            echo "Writing to: " & outputPath
             writeFile(outputPath, newContents)
 
         echo "replaced " & $replaced & " characters."
